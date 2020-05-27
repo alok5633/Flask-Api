@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+   
+    <style>
+        table, td, th {  
+  border: 2px solid #ddd;
+  text-align: left;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+td,th{
+    width: 16.67%;
+}
+
+    </style>
+
+</head>
+<body>
+    <input type="text" id="input-text">
+    <button onclick="myFunction()">Search</button>
+    <table>
+        <tr>
+            <th>Medicine</th>
+            <th>Saltname</th> 
+            <th>Manufacturer</th>
+            <th>MRP</th>
+            <th>BestPrice</th>
+            <th>Packsize</th>
+        </tr>
+    </table>
+    <div id="result">
+
+    </div>
+
+    <script type="text/javascript">
+    var  questions = '{{data | tojson }}';
+    var size='{{size | tojson }}'
+    
+    size=size.toString()
+    var p="85"
+    var s=parseInt(size)
+    
+    questions=questions.replace(/['"]+/g, '');
+    questions=questions.replace(/[\[\]']+/g,'');
+    var array = questions.split(',');
+    
+    var data_2=[]
+    var tracker=0
+    var result=document.getElementById('result');
+    result.innerHTML="";
+    for(var i=1;i<100;i++){
+        l=[]
+        for(var j=0;j<6;j++){
+                l.push(array[tracker+j])
+        }
+        tracker=tracker+6
+        data_2.push(l)
+    }
+    console.log(data_2)
+    /*
+    result.innerHTML +=`<table>
+        <tr>
+            <td>`+data_2[1][0]+`</td>
+            <td>`+data_2[1][1]+`</td> 
+            <td>`+data_2[1][2]+`</td>
+            <td>`+data_2[1][3]+`</td>
+            <td>`+data_2[1][4]+`</td>
+            <td>`+data_2[1][5]+`</td>
+        </tr>
+    `
+    */
+    
+    for(var i=1;i<100;i++){
+        result.innerHTML +=`
+        <table>
+        <tr>
+    <td>`+data_2[i][0]+`</td>
+    <td>`+data_2[i][1]+`</td>
+    <td>`+data_2[i][2]+`</td>
+    <td>`+data_2[i][3]+`</td>
+    <td>`+data_2[i][4]+`</td>
+    <td>`+data_2[i][5]+`</td>
+  </tr>
+  </table>
+        `;
+    }
+
+
+
+    function myFunction(){
+        var input=document.getElementById("input-text").value;
+        console.log(input)
+        $.ajax({
+  type: 'POST',
+  data: JSON.stringify({input:input}),
+      contentType: 'application/json',
+              url: '/search',						
+              success: function(data) {
+                  console.log('success');
+                  //console.log(data.search)
+                  var result=document.getElementById('result');
+                  result.innerHTML="";
+                  for(var i=0;i<data.search.length;i++){
+                    result.innerHTML +=`
+                                    <table>
+                                    <tr>
+                                <td>`+data.search[i][0]+`</td>
+                                <td>`+data.search[i][1]+`</td>
+                                <td>`+data.search[i][2]+`</td>
+                                <td>`+data.search[i][3]+`</td>
+                                <td>`+data.search[i][4]+`</td>
+                                <td>`+data.search[i][5]+`</td>
+                            </tr>
+                            </table>
+                                    `;
+                  }
+              }
+        })
+    }
+    
+    </script>
+</body>
+</html>
